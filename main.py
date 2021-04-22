@@ -1,8 +1,5 @@
 from browser import document, window
 
-from Vector import Vector
-from Particle import Particle
-
 
 ####	Functions	####
 
