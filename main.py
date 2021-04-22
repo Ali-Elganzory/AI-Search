@@ -34,7 +34,11 @@ def update(event=None):
 
 
 def mousemove(event):
-	if (event.button == 0):
+	if event.x < left_padding or event.x > left_padding + (grid_dimensions[1] * cell_size) \
+		or event.y < top_padding or event.y > top_padding + (grid_dimensions[0] * cell_size):
+		return
+		
+	if event.button == 0:
 		grid[(event.y-top_padding)//cell_size][(event.x-left_padding)//cell_size] = selected_tool
 
 
@@ -52,10 +56,10 @@ ctx = canvas.getContext("2d")
 width = window.innerWidth
 height = window.innerHeight
 canvas["width"] = width
-canvas["height"] = height
+top_padding = 1 * 38 + 2 * 27
+canvas["height"] = height - top_padding
 
 # Constants
-top_padding = 2 * 38 + 2 * 21
 grid_dimensions = (10, 10)
 grid = [["empty" for j in range(grid_dimensions[0])] for i in range(grid_dimensions[1])]
 cell_size = 40
