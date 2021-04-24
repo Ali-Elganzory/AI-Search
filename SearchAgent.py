@@ -84,14 +84,68 @@ class SearchAgent(object):
 				for i in expand (self,node):
 					if node != "visited":
 						fringe.append (i)
-						i == "visited"
+						i == "visited" # i guess there might be a mistake here
 		 
 
-		pass
+
 	
 	def depth_first_search(self):
 		self.reset_grid()
-		pass
+		fringe = []
+		fring.append(node)
+		while fringe:
+			node = fringe.pop() # pop(0) === queue and pop() === stack 
+			if is_goal_state (node):
+				self.__agent_status = "success"
+				return
+			if node != "visited" :
+				node == "visited"
+				for i in expand(self, node):
+					if node != "visited":
+						fringe.append(i)
+	
+	def depth_limit_search(self, limit):
+		self.reset_grid()
+		fringe = []
+		fringe.append(node)
+		while limit >= 0:
+			node = fringe.pop()
+			if is_goal_state (node):
+				self.__agent_status = "success"
+				return
+			if node != "visited" :
+				node == "visited"
+				for i in expand(self, node):
+					if node != "visited":
+						fringe.append(i)
+			limit = limit - 1
+	
+	def iterative_depth_search(self):
+		self.reset_grid()
+		fringe = []
+		fringe.append(node)
+		limit = -1
+		iteration = 1
+		while iteration < 100:
+			limit = limit + 1
+			while limit >= 0:
+				node = fringe.pop()
+				if is_goal_state (node):
+					self.__agent_status = "success"
+					return
+				if node != "visited" :
+					node == "visited"
+					for i in expand(self, node):
+						if node != "visited":
+							fringe.append(i)
+				limit = limit - 1
+			iteration = iteration + 1
+			
+		if iteration = 100 :
+			print("Error, the goal is not found!")
+			return
+
+		
 	
 	def uniform_cost_search(self):
 		self.reset_grid()
