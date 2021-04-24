@@ -68,8 +68,25 @@ class SearchAgent(object):
 		'''
 		pass
 
-	def breadth_first_search(self):
+	def breadth_first_search(node):
 		self.reset_grid()
+		fringe = []
+		fringe.append(node)
+		node == "visited"
+		while fringe:
+			node = fringe.pop[0]
+			if is_goal_state (node):
+				self.__agent_status = "success"
+				return
+
+			if node !="visited" :
+				node == "visited"
+				for i in expand (self,node):
+					if node != "visited":
+						fringe.append (i)
+						i == "visited"
+		 
+
 		pass
 	
 	def depth_first_search(self):
