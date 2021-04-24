@@ -44,14 +44,16 @@ def update(event=None):
 
 	window.setTimeout(request_again, 24)
 	
-	try:
-		now = javascript.Date.now()
-		if now - start_date >= 500:
-			window.setTimeout(advance_search_generator, 1)
-			start_date = now
-
-	except StopIteration:
-		pass
+	if search_agent.is_agent_searching:
+		try:
+			now = javascript.Date.now()
+			if now - start_date >= 500:
+				window.setTimeout(advance_search_generator, 1)
+				start_date = now
+		except StopIteration as e:
+			print("search_generator is empty")
+		except Exception as e:
+			pass
 
 
 def mousemove(event):
@@ -70,16 +72,25 @@ def select_tool(tool):
 	global selected_tool
 	selected_tool = tool
 
+# Setter for the [selected_search_algorithm]
+def select_search_algorithm(search_algorithm):
+	global selected_search_algorithm
+	selected_search_algorithm = search_algorithm
+
+def solve():
+	global search_generator
+	search_generator = alogorithms[selected_search_algorithm]()
+	next(search_generator)
+
 
 
 ####	Main		####
 
 # Constants
 grid_dimensions = (10, 10)
+cell_size = 40
 search_agent = SearchAgent(grid_dimensions)
 
-cell_size = 40
-top_padding = 1 * 38 + 2 * 24
 
 # Getting and setting canvas
 canvas = document["canvas"]
@@ -89,7 +100,8 @@ height = window.innerHeight
 canvas["width"] = width
 canvas["height"] = grid_dimensions[0] * cell_size
 
-# Rest of constants that incorporate the canvas dimensions in calculation
+# Canvas paddings
+top_padding = 1 * 38 + 2 * 24
 left_padding = (width - (grid_dimensions[0] * cell_size)) // 2
 
 # Mapping tools to their respective colors
@@ -103,11 +115,29 @@ colors = {
 }
 
 # Binding listeners to tools and mousedown events
-document["block"].bind("click", lambda e: select_tool("blocked"))
 document["empty"].bind("click", lambda e: select_tool("empty"))
+document["block"].bind("click", lambda e: select_tool("blocked"))
 document["source"].bind("click", lambda e: select_tool("source"))
 document["target"].bind("click", lambda e: select_tool("target"))
 document["canvas"].bind("mousedown", mousemove)
+
+# Mapping actions to their respective search algorithms
+selected_search_algorithm = "breadth-first"
+alogorithms = {
+	"breadth-first": search_agent.breadth_first_search,
+	"depth-first": search_agent.depth_first_search,
+	"uniform-cost": search_agent.uniform_cost_search,
+	"greedy": search_agent.greedy_search,
+	"a*": search_agent.a_star_search,
+}
+
+# Binding listeners to algorithms options and solve
+document["breadth-first"].bind("click", lambda e: select_search_algorithm("breadth-first"))
+document["depth-first"].bind("click", lambda e: select_search_algorithm("depth-first"))
+document["uniform-cost"].bind("click", lambda e: select_search_algorithm("uniform-cost"))
+document["greedy"].bind("click", lambda e: select_search_algorithm("greedy"))
+document["a*"].bind("click", lambda e: select_search_algorithm("a*"))
+document["solve"].bind("click", lambda e: solve())
 
 # Eventloop
 start_date = javascript.Date.now()
