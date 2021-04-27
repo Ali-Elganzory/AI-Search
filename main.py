@@ -116,7 +116,8 @@ colors = {
 	"empty": "white",
 	"source": "red",
 	"target": "green",
-	"visited": "purple"
+	"visited": "purple",
+	"path": "orange"
 }
 
 # Binding listeners to tools and mousedown events

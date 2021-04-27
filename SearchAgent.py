@@ -10,10 +10,13 @@ class Node(object):
 		self.from_x = from_x
 		self.from_y = from_y
 		self.cost = cost
+		self.path = [(from_x, from_y)]
 
 	# Construct new node from a certain node [node]
 	def from_node(self, node):
-		return Node(self.x + node.x, self.y + node.y, node.x, node.y, node.cost + 1)
+		new_node = Node(self.x + node.x, self.y + node.y, node.x, node.y, node.cost + 1)
+		new_node.path = node.path + [(node.x, node.y)]
+		return new_node
 
 
 class SearchAgent(object):
@@ -80,9 +83,14 @@ class SearchAgent(object):
 		return False
 
 	# Finished with "success" or "failed"
-	def finished(self, result, source):
+	def finished(self, result, goal):
 		self.__agent_status = result
-		self.grid[source.x][source.y] = "source"
+		if result == "failed":
+			self.grid[goal.x][goal.y] = "source"
+			return
+		for cell in goal.path[1:]:
+			self.grid[cell[0]][cell[1]] = "path"
+		self.grid[goal.path[1][0]][goal.path[1][1]] = "source"
 
 	def test(self):
 		pass
@@ -105,7 +113,7 @@ class SearchAgent(object):
 		while fringe:
 			node = fringe.pop(0)
 			if self.is_goal_state(node):
-				self.finished("success", source)
+				self.finished("success", node)
 				return
 
 			if self.node_state(node) != "visited":
