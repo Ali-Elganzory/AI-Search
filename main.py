@@ -3,8 +3,9 @@ import javascript
 
 from SearchAgent import SearchAgent
 
-
-####	Functions	####
+########################################
+########		Functions		########
+########################################
 
 def window_updated():
 	global width, height
@@ -84,7 +85,9 @@ def solve():
 
 
 
-####	Main		####
+########################################
+########		  Main		 	########
+########################################
 
 # Constants
 grid_dimensions = (10, 10)
