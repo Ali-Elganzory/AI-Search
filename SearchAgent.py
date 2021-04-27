@@ -24,6 +24,10 @@ class SearchAgent(object):
 		self.__dimensions = dimensions
 		self.grid = [["empty" for j in range(dimensions[0])] for i in range(dimensions[1])]
 
+	################################################
+	########		Utility Functions		########
+	################################################
+
 	@property
 	def dimensions(self):
 		return this.__dimensions
@@ -36,6 +40,7 @@ class SearchAgent(object):
 	def is_agent_searching(self):
 		return self.__agent_status == "searching"
 
+	# Reserve the agent and prevent starting new alogorithms while searching
 	def reserve_agent(self):
 		if self.__agent_status == "searching":
 			return False
@@ -46,6 +51,10 @@ class SearchAgent(object):
 	def reset_grid(self):
 		self.grid = list(map(lambda l: list(map(lambda c: c if c in ["blocked", "source", "target"] else "empty", l)), self.grid))
 
+	# The state of a certain node
+	def node_state(self, node):
+		return self.grid[node.x][node.y]
+
 	# Checks whether the state is the goal state (target)
 	def is_goal_state(self, node):
 		return self.node_state(node) == "target"
@@ -53,13 +62,14 @@ class SearchAgent(object):
 	# Checks whether the new state is a valid state
 	def is_valid_state(self, node):
 		return not (node.x < 0 or node.x >= self.__dimensions[0] \
-			or node.y < 0 or node.y >= self.__dimensions[1]) and self.node_state(node) == "empty"
+			or node.y < 0 or node.y >= self.__dimensions[1]) and self.node_state(node) in ["empty", "target"]
 
 	# Expand a node to its valid new states
 	def expand(self, node):
 		children = [Node(1, 0), Node(-1, 0), Node(0, 1), Node(0, -1)]
-		return list(filter(lambda n: self.is_valid_state(n), map(lambda n: n.from_node(node), children)))
+		return list(filter(self.is_valid_state, map(lambda n: n.from_node(node), children)))
 
+	# Get the source node (start state)
 	@property
 	def source(self):
 		for i in range(self.__dimensions[0]):
@@ -69,30 +79,33 @@ class SearchAgent(object):
 		self.__agent_status = "no-source"
 		return False
 
-	def node_state(self, node):
-		return self.grid[node.x][node.y]
+	# Finished with "success" or "failed"
+	def finished(self, result, source):
+		self.__agent_status = result
+		self.grid[source.x][source.y] = "source"
 
 	def test(self):
-		'''
-		for i in range(self.__dimensions[0]):
-			for j in range(self.__dimensions[1]):
-				self.grid[i][j] = "visited"
-				yield
-		'''
 		pass
 
+
+	################################################
+	########		Search Algorithms		########
+	################################################
+
 	def breadth_first_search(self):
-		if self.source == False or (not self.reserve_agent()):
+		source = self.source
+		if not (source != False and self.reserve_agent()):
 			return
+
 		self.reset_grid()
 		fringe = []
-		node = self.source
+		node = source
 		fringe.append(node)
 
 		while fringe:
 			node = fringe.pop(0)
 			if self.is_goal_state(node):
-				self.__agent_status = "success"
+				self.finished("success", source)
 				return
 
 			if self.node_state(node) != "visited":
@@ -102,7 +115,7 @@ class SearchAgent(object):
 						fringe.append(n)
 				yield
 
-		self.__agent_status = "failed"
+		self.finished("failed", source)
 
 	
 	def depth_first_search(self):

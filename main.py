@@ -89,6 +89,8 @@ def solve():
 # Constants
 grid_dimensions = (10, 10)
 cell_size = 40
+
+# Search Agent
 search_agent = SearchAgent(grid_dimensions)
 
 
