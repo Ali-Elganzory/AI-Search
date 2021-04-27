@@ -1,5 +1,7 @@
 import javascript
 
+from PriorityQueue import PriorityQueue
+
 
 # Represents a state
 class Node(object):
