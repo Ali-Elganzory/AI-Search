@@ -132,6 +132,8 @@ selected_search_algorithm = "breadth-first"
 alogorithms = {
 	"breadth-first": search_agent.breadth_first_search,
 	"depth-first": search_agent.depth_first_search,
+	"depth-limit": lambda limit=3: search_agent.depth_limit_search(limit),
+	"iterative-deepening": lambda max_limit=10: search_agent.iterative_deepening_search(max_limit),
 	"uniform-cost": search_agent.uniform_cost_search,
 	"greedy": search_agent.greedy_search,
 	"a*": search_agent.a_star_search,
@@ -141,6 +143,8 @@ alogorithms = {
 document["breadth-first"].bind("click", lambda e: select_search_algorithm("breadth-first"))
 document["depth-first"].bind("click", lambda e: select_search_algorithm("depth-first"))
 document["uniform-cost"].bind("click", lambda e: select_search_algorithm("uniform-cost"))
+document["depth-limit"].bind("click", lambda e: select_search_algorithm("depth-limit"))
+document["iterative-deepening"].bind("click", lambda e: select_search_algorithm("iterative-deepening"))
 document["greedy"].bind("click", lambda e: select_search_algorithm("greedy"))
 document["a*"].bind("click", lambda e: select_search_algorithm("a*"))
 document["solve"].bind("click", lambda e: solve())

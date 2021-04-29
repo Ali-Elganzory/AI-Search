@@ -6,7 +6,7 @@ from PriorityQueue import PriorityQueue
 # Represents a state
 class Node(object):
 	"""docstring for Node"""
-	def __init__(self, x, y, from_x=-1, from_y=-1, cost=1):
+	def __init__(self, x, y, from_x=-1, from_y=-1, cost=0):
 		self.x = x
 		self.y = y
 		self.from_x = from_x
@@ -129,60 +129,83 @@ class SearchAgent(object):
 
 	
 	def depth_first_search(self):
+
+		source = self.source
+		if not (source != False and self.reserve_agent()):
+			return
+
 		self.reset_grid()
 		fringe = []
-		fring.append(node)
+		node = source
+		fringe.append(node)
 		while fringe:
 			node = fringe.pop() # pop(0) === queue and pop() === stack 
-			if is_goal_state (node):
-				self.__agent_status = "success"
+			if self.is_goal_state (node):
+				self.finished("success", node)
 				return
-			if node != "visited" :
-				node == "visited"
-				for i in expand(self, node):
-					if node != "visited":
+
+			if self.node_state(node) != "visited" :
+				self.grid[node.x][node.y] = "visited"
+				for i in self.expand(node):
+					if self.node_state(i) != "visited":
 						fringe.append(i)
+				yield
+		self.finished("failed", source)
 	
 	def depth_limit_search(self, limit):
-		self.reset_grid()
-		fringe = []
-		fringe.append(node)
-		while limit >= 0:
-			node = fringe.pop()
-			if is_goal_state (node):
-				self.__agent_status = "success"
-				return
-			if node != "visited" :
-				node == "visited"
-				for i in expand(self, node):
-					if node != "visited":
-						fringe.append(i)
-			limit = limit - 1
-	
-	def iterative_depth_search(self):
-		self.reset_grid()
-		fringe = []
-		fringe.append(node)
-		limit = -1
-		iteration = 1
-		while iteration < 100:
-			limit = limit + 1
-			while limit >= 0:
-				node = fringe.pop()
-				if is_goal_state (node):
-					self.__agent_status = "success"
-					return
-				if node != "visited" :
-					node == "visited"
-					for i in expand(self, node):
-						if node != "visited":
-							fringe.append(i)
-				limit = limit - 1
-			iteration = iteration + 1
-			
-		if iteration == 100 :
-			print("Error, the goal is not found!")
+		source = self.source
+		if not (source != False and self.reserve_agent()):
 			return
+
+		self.reset_grid()
+		fringe = []
+		node = source
+		fringe.append(node)
+		while fringe:
+			node = fringe.pop() # pop(0) === queue and pop() === stack 
+			if self.is_goal_state (node):
+				self.finished("success", node)
+				return
+
+			if self.node_state(node) != "visited" :
+				self.grid[node.x][node.y] = "visited"
+			if node.cost < limit:
+				for i in self.expand(node):
+					if self.node_state(i) != "visited":
+						fringe.append(i)
+
+			yield
+
+		self.finished("failed", source)
+			
+	
+	def iterative_deepening_search(self, max_depth_limit):
+		for limit in range(1, max_depth_limit):
+			source = self.source
+			if not (source != False and self.reserve_agent()):
+				return
+
+			self.reset_grid()
+			fringe = []
+			node = source
+			fringe.append(node)
+			while fringe:
+				node = fringe.pop() # pop(0) === queue and pop() === stack 
+				if self.is_goal_state (node):
+					self.finished("success", node)
+					return
+
+				if self.node_state(node) != "visited" :
+					self.grid[node.x][node.y] = "visited"
+				if node.cost < limit:
+					for i in self.expand(node):
+						if self.node_state(i) != "visited":
+							fringe.append(i)
+
+				yield
+
+			self.finished("failed", source)
+		
 
 		
 	
