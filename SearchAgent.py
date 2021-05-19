@@ -210,8 +210,35 @@ class SearchAgent(object):
 		
 	
 	def uniform_cost_search(self):
+		source = self.source
+		if not (source != False and self.reserve_agent()):
+			return
+
 		self.reset_grid()
-		pass
+		fringe = []
+		node = source
+		fringe.append(node)
+
+		while fringe:
+			minCost = 1000
+			x = 1000
+			for i in range(len(fringe)):
+				if fringe[i].cost < minCost:
+					minCost = fringe[i].cost
+					x = i
+			node = fringe.pop(x)
+			if self.is_goal_state(node):
+				self.finished("success", node)
+				return
+
+			if self.node_state(node) != "visited":
+				self.grid[node.x][node.y] = "visited"
+				for n in self.expand(node):
+					if self.node_state(n) != "visited":
+						fringe.append(n)
+				yield
+
+		self.finished("failed", source)
 
 	def greedy_search(self):
 		self.reset_grid()
