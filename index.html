@@ -31,7 +31,7 @@
 
 <body id="body" onload="brython()">
 
-	<div id="container">
+	<div style="height: 90px;">
 		<div class="row position-relative">
 
 			<div class="col-1 py-4 px-5 position-absolute">
@@ -71,17 +71,19 @@
 
 			<div id="tools" class="col-5 py-4 btn-group position-relative top-50 start-50 translate-middle-x"
 				role="group" aria-label="tools">
-				<input type="radio" class="btn-check" name="btnradio" id="empty" autocomplete="off" checked>
-				<label class="btn btn-outline-primary" for="empty"><i class="fa fa-minus-square"></i> Empty</label>
+				<input type="radio" class="btn-check" name="btnradio" id="add_node" autocomplete="off" checked>
+				<label class="btn btn-outline-success" for="add_node"><i class="fa fa-square"></i> Add node</label>
 
-				<input type="radio" class="btn-check" name="btnradio" id="block" autocomplete="off">
-				<label class="btn btn-outline-secondary" for="block"><i class="fa fa-square"></i> Block</label>
+				<input type="radio" class="btn-check" name="btnradio" id="add_edge" autocomplete="off">
+				<label class="btn btn-outline-success" for="add_edge"><i class="fa fa-square"></i> Add edge</label>
 
-				<input type="radio" class="btn-check" name="btnradio" id="source" autocomplete="off">
-				<label class="btn btn-outline-danger" for="source"><i class="fa fa-circle-o"></i> Source</label>
+				<input type="radio" class="btn-check" name="btnradio" id="delete_node" autocomplete="off">
+				<label class="btn btn-outline-danger" for="delete_node"><i class="fa fa-minus-square"></i> Delete
+					node</label>
 
-				<input type="radio" class="btn-check" name="btnradio" id="target" autocomplete="off">
-				<label class="btn btn-outline-success" for="target"><i class="fa fa-circle"></i> Target</label>
+				<input type="radio" class="btn-check" name="btnradio" id="delete_edge" autocomplete="off">
+				<label class="btn btn-outline-danger" for="delete_edge"><i class="fa fa-minus-square"></i> Delete
+					edge</label>
 			</div>
 
 		</div>
@@ -89,13 +91,13 @@
 
 	<canvas id="canvas"></canvas>
 
-	<div class="container py-5">
+	<div style="height: 220px;">
 
-		<p class="col-5 fs-5 position-relative top-50 start-50 translate-middle-x">
+		<p class="col-5 fs-5 position-relative start-50 translate-middle-x">
 			Uninformed Search
 		</p>
-		<div id="uninformed search" class="col-5 btn-group position-relative top-50 start-50 translate-middle-x"
-			role="group" aria-label="uninformed search">
+		<div id="uninformed search" class="col-5 btn-group position-relative start-50 translate-middle-x" role="group"
+			aria-label="uninformed search">
 			<input type="radio" class="btn-check" name="search" id="breadth-first" autocomplete="off" checked>
 			<label class="btn btn-outline-primary" for="breadth-first">Breadth First</label>
 
@@ -107,19 +109,19 @@
 
 			<input type="radio" class="btn-check" name="search" id="iterative-deepening" autocomplete="off">
 			<label class="btn btn-outline-primary" for="iterative-deepening">Iterative Deepening</label>
-			
+
 			<input type="radio" class="btn-check" name="search" id="uniform-cost" autocomplete="off">
 			<label class="btn btn-outline-primary" for="uniform-cost">Uniform Cost</label>
 		</div>
 
 		<div class="py-2"></div>
 
-		<p class="col-5 fs-5 position-relative top-50 start-50 translate-middle-x">
+		<p class="col-5 fs-5 position-relative start-50 translate-middle-x">
 			Informed Search
 		</p>
 
-		<div id="Informed search" class="col-5 btn-group position-relative top-50 start-50 translate-middle-x"
-			role="group" aria-label="informed search">
+		<div id="Informed search" class="col-5 btn-group position-relative start-50 translate-middle-x" role="group"
+			aria-label="informed search">
 			<input type="radio" class="btn-check" name="search" id="greedy" autocomplete="off">
 			<label class="btn btn-outline-primary" for="greedy">Greedy</label>
 
@@ -128,9 +130,7 @@
 		</div>
 	</div>
 
-	<div class="py-2"></div>
-
-	<div class="container">
+	<div class="container" style="height: 40px;">
 		<div class="row justify-content-center">
 			<button id="solve" type="button" class="col-5 btn btn-dark">Solve</button>
 		</div>
