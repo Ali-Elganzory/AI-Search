@@ -131,6 +131,9 @@ def mousemove(event):
             elif selected_tool is "add_edge":
                 selected_node_name = unselected
                 graph_updated = True
+            elif selected_tool is "delete_edge":
+                selected_node_name = unselected
+                graph_updated = True
             elif selected_tool is "update_weight":
                 edge_ends = get_clicked_edge_ends(12)
                 if edge_ends != -1:
@@ -163,6 +166,19 @@ def mousemove(event):
                         search_agent.graph[selected_node_name].children[node_name] = 99
                         if graph_type is undirected:
                             search_agent.graph[node_name].children[selected_node_name] = 99
+                        selected_node_name = unselected
+                        graph_updated = True
+            elif selected_tool is "delete_edge":
+                if selected_node_name is unselected:
+                    selected_node_name = node_name
+                    graph_updated = True
+                elif selected_node_name is not node_name:
+                    if child_exists(search_agent.graph[selected_node_name].children, node_name):
+                        search_agent.graph[selected_node_name].children.pop(
+                            node_name, 99)
+                        if graph_type is undirected:
+                            search_agent.graph[node_name].children.pop(
+                                selected_node_name, 99)
                         selected_node_name = unselected
                         graph_updated = True
 
