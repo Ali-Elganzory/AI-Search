@@ -44,6 +44,9 @@ class SearchAgent(object):
     def node_state(self, node):
         return self.graph[node.name].state
 
+    def set_node_state(self, node, state):
+        self.graph[node.name].state = state
+
     # Checks whether the state is the goal state (goal)
     def is_goal_state(self, node):
         return self.node_state(node) == "goal"
@@ -89,7 +92,7 @@ class SearchAgent(object):
                 return
 
             if self.node_state(node) != "visited":
-                self.graph[node.name].state = "visited"
+                self.set_node_state(node, "visited")
                 for n in self.expand(node):
                     if self.node_state(n) != "visited":
                         fringe.append(n)
@@ -98,50 +101,52 @@ class SearchAgent(object):
         self.finished("failed", source)
 
     def depth_first_search(self):
-
         source = self.source
-        if not (source != False and self.reserve_agent()):
+        if not self.reserve_agent():
             return
 
-        self.reset_grid()
+        self.reset_graph()
         fringe = []
         node = source
         fringe.append(node)
+
         while fringe:
-            node = fringe.pop()  # pop(0) === queue and pop() === stack
+            node = fringe.pop()
             if self.is_goal_state(node):
                 self.finished("success", node)
                 return
 
             if self.node_state(node) != "visited":
-                self.grid[node.x][node.y] = "visited"
-                for i in self.expand(node):
-                    if self.node_state(i) != "visited":
-                        fringe.append(i)
+                self.set_node_state(node, "visited")
+                for n in self.expand(node):
+                    if self.node_state(n) != "visited":
+                        fringe.append(n)
                 yield
+
         self.finished("failed", source)
 
     def depth_limit_search(self, limit):
         source = self.source
-        if not (source != False and self.reserve_agent()):
+        if not self.reserve_agent():
             return
 
-        self.reset_grid()
+        self.reset_graph()
         fringe = []
         node = source
         fringe.append(node)
+
         while fringe:
-            node = fringe.pop()  # pop(0) === queue and pop() === stack
+            node = fringe.pop()
             if self.is_goal_state(node):
                 self.finished("success", node)
                 return
 
             if self.node_state(node) != "visited":
-                self.grid[node.x][node.y] = "visited"
-            if node.cost < limit:
-                for i in self.expand(node):
-                    if self.node_state(i) != "visited":
-                        fringe.append(i)
+                self.set_node_state(node, "visited")
+            if len(node.path) < limit:
+                for n in self.expand(node):
+                    if self.node_state(n) != "visited":
+                        fringe.append(n)
 
             yield
 
@@ -150,22 +155,23 @@ class SearchAgent(object):
     def iterative_deepening_search(self, max_depth_limit):
         for limit in range(1, max_depth_limit):
             source = self.source
-            if not (source != False and self.reserve_agent()):
+            if not self.reserve_agent():
                 return
 
-            self.reset_grid()
+            self.reset_graph()
             fringe = []
             node = source
             fringe.append(node)
+
             while fringe:
-                node = fringe.pop()  # pop(0) === queue and pop() === stack
+                node = fringe.pop()
                 if self.is_goal_state(node):
                     self.finished("success", node)
                     return
 
                 if self.node_state(node) != "visited":
-                    self.grid[node.x][node.y] = "visited"
-                if node.cost < limit:
+                    self.set_node_state(node, "visited")
+                if len(node.path) < limit:
                     for i in self.expand(node):
                         if self.node_state(i) != "visited":
                             fringe.append(i)
