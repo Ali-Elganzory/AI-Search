@@ -1,37 +1,15 @@
-import javascript
-
 # from PriorityQueue import PriorityQueue
 
-
-# Represents a state
-class Node(object):
-    """docstring for Node"""
-
-    def __init__(self, x, y, from_x=-1, from_y=-1, cost=0):
-        self.x = x
-        self.y = y
-        self.from_x = from_x
-        self.from_y = from_y
-        self.cost = cost
-        self.path = [(from_x, from_y)]
-
-    # Construct new node from a certain node [node]
-    def from_node(self, node):
-        new_node = Node(self.x + node.x, self.y + node.y,
-                        node.x, node.y, node.cost + 1)
-        new_node.path = node.path + [(node.x, node.y)]
-        return new_node
+from Node import Node
 
 
 class SearchAgent(object):
     """docstring for SearchAgent"""
 
-    def __init__(self, dimensions):
+    def __init__(self, graph={}):
         super(SearchAgent, self).__init__()
         self.__agent_status = "idle"
-        self.__dimensions = dimensions
-        self.grid = [["empty" for j in range(
-            dimensions[0])] for i in range(dimensions[1])]
+        self.graph = graph
 
     ################################################
     ########		Utility Functions		########
@@ -57,47 +35,38 @@ class SearchAgent(object):
         return True
 
     # To reset the grid to its initial state
-    def reset_grid(self):
-        self.grid = list(map(lambda l: list(map(lambda c: c if c in [
-                         "blocked", "source", "target"] else "empty", l)), self.grid))
+    def reset_graph(self):
+        for node_name, node in self.graph.items():
+            self.graph[node_name].state = self.graph[node_name].state if self.graph[node_name].state in [
+                "source", "goal"] else "empty"
 
     # The state of a certain node
     def node_state(self, node):
-        return self.grid[node.x][node.y]
+        return self.graph[node.name].state
 
-    # Checks whether the state is the goal state (target)
+    # Checks whether the state is the goal state (goal)
     def is_goal_state(self, node):
-        return self.node_state(node) == "target"
-
-    # Checks whether the new state is a valid state
-    def is_valid_state(self, node):
-        return not (node.x < 0 or node.x >= self.__dimensions[0]
-                    or node.y < 0 or node.y >= self.__dimensions[1]) and self.node_state(node) in ["empty", "target"]
+        return self.node_state(node) == "goal"
 
     # Expand a node to its valid new states
     def expand(self, node):
-        children = [Node(1, 0), Node(-1, 0), Node(0, 1), Node(0, -1)]
-        return list(filter(self.is_valid_state, map(lambda n: n.from_node(node), children)))
+        return list(map(lambda name: Node.copy_from(self.graph[name], extra_cost=node.children[name], path=node.path + [node.name]), node.children.keys()))
 
     # Get the source node (start state)
     @property
     def source(self):
-        for i in range(self.__dimensions[0]):
-            for j in range(self.__dimensions[1]):
-                if self.grid[i][j] == "source":
-                    return Node(i, j, -1, -1)
-        self.__agent_status = "no-source"
-        return False
+        return self.graph[0]
 
     # Finished with "success" or "failed"
     def finished(self, result, goal):
         self.__agent_status = result
         if result == "failed":
-            self.grid[goal.x][goal.y] = "source"
+            self.graph[goal.name].state = "source"
             return
-        for cell in goal.path[1:]:
-            self.grid[cell[0]][cell[1]] = "path"
-        self.grid[goal.path[1][0]][goal.path[1][1]] = "source"
+        print(goal.path)
+        for node_name in goal.path[0:]:
+            self.graph[node_name].state = "path"
+        self.graph[goal.path[0]].state = "source"
 
     ################################################
     ########		Search Algorithms		########
@@ -105,10 +74,10 @@ class SearchAgent(object):
 
     def breadth_first_search(self):
         source = self.source
-        if not (source != False and self.reserve_agent()):
+        if not self.reserve_agent():
             return
 
-        self.reset_grid()
+        self.reset_graph()
         fringe = []
         node = source
         fringe.append(node)
@@ -120,7 +89,7 @@ class SearchAgent(object):
                 return
 
             if self.node_state(node) != "visited":
-                self.grid[node.x][node.y] = "visited"
+                self.graph[node.name].state = "visited"
                 for n in self.expand(node):
                     if self.node_state(n) != "visited":
                         fringe.append(n)

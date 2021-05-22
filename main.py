@@ -4,6 +4,7 @@ import javascript
 from SearchAgent import SearchAgent
 from Node import Node
 
+
 ########################################
 ########		Functions		########
 ########################################
@@ -19,44 +20,51 @@ def window_updated():
     canvas["height"] = window_height
 
 
-# Dummy graph
-graph = {
-    0: Node(0, (340, 140), children=[(1, 20), (2, 13)]),
-    1: Node(0, (420, 140), children=[(4, 45), (7, 67)]),
-    2: Node(0, (420, 220), children=[(4, 90), (7, 18)]),
-    4: Node(0, (340, 220), children=[]),
-    7: Node(0, (360, 300), children=[]),
-}
-
-
 def update(event=None):
-    global start_date, circle_radius, circle_colors
+    global start_date, circle_radius, circle_colors, graph_updated
 
     # Drawing
-    if updated():
+    if is_graph_updated():
         # Clear the canvas
         ctx.clearRect(0, 0, window_width, window_height)
         ctx.save()
 
-        # Draw the grid
+        # Style
         ctx.lineWidth = 4
-        ctx.strokeStyle = circle_colors["unselected"]
-        for node in graph.values():
+        ctx.textAlign = "center"
+
+        # Draw edges
+        ctx.font = '20px serif'
+        for node in search_agent.graph.values():
+            selection_state = "unselected" if node.name is selected_node_name else "unselected"
+            ctx.strokeStyle = circle_colors[selection_state]
             ctx.beginPath()
-            for edge in node.children:
+            for child_name, weight in node.children.items():
                 ctx.moveTo(*node.position)
-                ctx.lineTo(*graph[edge[0]].position)
+                ctx.lineTo(*search_agent.graph[child_name].position)
+                ctx.fillText(weight, (node.position[0] +
+                                      search_agent.graph[child_name].position[0]) / 2 + 4, (node.position[1] + search_agent.graph[child_name].position[1]) / 2 - 8)
             ctx.stroke()
 
-        for node in graph.values():
+        # Draw nodes
+        ctx.font = '16px serif'
+        for node in search_agent.graph.values():
+            selection_state = "selected" if node.name is selected_node_name else "unselected"
+            ctx.strokeStyle = circle_colors[selection_state]
             ctx.beginPath()
             ctx.arc(*node.position,
                     circle_radius, 0, 2 * javascript.Math.PI)
             ctx.stroke()
             ctx.fillStyle = node_colors[node.state]
             ctx.fill()
+            ctx.textBaseline = "middle"
+            ctx.fillStyle = "black" if node_colors[node.state] is "white" else "white"
+            ctx.fillText(node.name, node.position[0], node.position[1] - 8)
+            ctx.fillText(f"h={node.heuristic}",
+                         node.position[0], node.position[1] + 8)
 
         ctx.restore()
+        graph_updated = False
 
     def request_again():
         window.requestAnimationFrame(update)
@@ -67,9 +75,10 @@ def update(event=None):
         next(search_generator)
 
     if search_agent.is_agent_searching:
+        graph_updated = True
         try:
             now = javascript.Date.now()
-            if now - start_date >= 500:
+            if now - start_date >= 800:
                 window.setTimeout(advance_search_generator, 1)
                 start_date = now
         except StopIteration as e:
@@ -79,39 +88,138 @@ def update(event=None):
 
 
 def mousemove(event):
-	global selected_tool, graph, node_counter
+    global selected_tool, search_agent, \
+        node_counter, graph_updated, \
+        selected_node_name, selected_edge_ends
 
-	x = event.x
-	y = event.y - 90
+    x = event.x
+    y = event.y - 90
 
-	def get_clicked_node_name():
-		for node in graph.values():
-			if x <= node.position[0] + circle_radius and \
-					x >= node.position[0] - circle_radius and \
-					y <= node.position[1] + circle_radius and \
-					y >= node.position[1] - circle_radius:
-				return node.name
-		return -1
+    def get_clicked_node_name(radius):
+        for node in search_agent.graph.values():
+            if x <= node.position[0] + radius and \
+                    x >= node.position[0] - radius and \
+                    y <= node.position[1] + radius and \
+                    y >= node.position[1] - radius:
+                return node.name
+        return -1
 
-	# Modify the graph with the appropriate tool
-	if event.button == 0:
-		node_name = get_clicked_node_name()
-		if node_name == -1:
-			if selected_tool is "add_node":
-				node_counter += 1
-				graph[node_counter] = Node(node_counter, (x, y))
-		else:
-			graph.pop(node_name)
+    def get_clicked_edge_ends(radius):
+        for node in search_agent.graph.values():
+            for child_name in node.children:
+                textX = (node.position[0] +
+                         search_agent.graph[child_name].position[0]) / 2 + 4
+                textY = (node.position[1] +
+                         search_agent.graph[child_name].position[1]) / 2 - 8
+                if x <= textX + radius and \
+                        x >= textX - radius and \
+                        y <= textY + radius and \
+                        y >= textY - radius:
+                    return (node.name, child_name)
+        return -1
+
+    # Modify the search_agent.graph with the appropriate tool
+    if event.button == 0:
+        node_name = get_clicked_node_name(circle_radius)
+        if node_name == -1:
+            if selected_tool is "add_node":
+                if get_clicked_node_name(circle_radius * 3) == -1:
+                    node_counter += 1
+                    search_agent.graph[node_counter] = Node(
+                        node_counter, (x, y), children={})
+                    graph_updated = True
+            elif selected_tool is "add_edge":
+                selected_node_name = unselected
+                graph_updated = True
+            elif selected_tool is "update_weight":
+                edge_ends = get_clicked_edge_ends(12)
+                if edge_ends != -1:
+                    selected_edge_ends = edge_ends
+                    setInputDialogVisibility(True)
+                    graph_updated = True
+        else:
+            if selected_tool is "toggle_goal":
+                if search_agent.graph[node_name].state is "source":
+                    return
+                search_agent.graph[node_name].state = "goal" if search_agent.graph[node_name].state is not "goal" else "empty"
+                graph_updated = True
+            elif selected_tool is "update_heuristic":
+                selected_node_name = node_name
+                setInputDialogVisibility(True)
+                graph_updated = True
+            elif selected_tool is "delete_node":
+                if search_agent.graph[node_name].state is not "source":
+                    search_agent.graph.pop(node_name)
+                    for node in search_agent.graph.values():
+                        search_agent.graph[node.name].children.pop(
+                            node_name, 99)
+                    graph_updated = True
+            elif selected_tool is "add_edge":
+                if selected_node_name is unselected:
+                    selected_node_name = node_name
+                    graph_updated = True
+                elif selected_node_name is not node_name:
+                    if not child_exists(search_agent.graph[selected_node_name].children, node_name):
+                        search_agent.graph[selected_node_name].children[node_name] = 99
+                        if graph_type is undirected:
+                            search_agent.graph[node_name].children[selected_node_name] = 99
+                        selected_node_name = unselected
+                        graph_updated = True
 
 
-def updated():
-    return True
+def child_exists(children, child_name):
+    return child_name in children
+
+
+def is_graph_updated():
+    global graph_updated
+    return graph_updated
 
 
 # Setter for the [selected_tool]
 def select_tool(tool):
     global selected_tool
     selected_tool = tool
+
+
+# Weights dialog
+def setInputDialogVisibility(state):
+    global selected_node_name, selected_edge_ends, graph_updated
+    if state:
+        document["weights-modal"].showModal()
+    else:
+        document["weights-modal"].close()
+        selected_node_name = unselected
+        selected_edge_ends = unselected
+        graph_updated = True
+
+
+def updateHeuristic(node_name, heuristic):
+    global graph_updated
+    search_agent.graph[node_name].heuristic = heuristic
+    graph_updated = True
+
+
+def updateWeight(from_node, to_node, weight):
+    global graph_updated
+    search_agent.graph[from_node].children[to_node] = weight
+    if graph_type is undirected:
+        search_agent.graph[to_node].children[from_node] = weight
+    graph_updated = True
+
+
+def heuristicsDialogUpdate():
+    validated = document["weights-form"].reportValidity()
+    if validated:
+        updateHeuristic(selected_node_name, document["weights-input"].value)
+        setInputDialogVisibility(False)
+
+
+def weightsDialogUpdate():
+    validated = document["weights-form"].reportValidity()
+    if validated:
+        updateWeight(*selected_edge_ends, document["weights-input"].value)
+        setInputDialogVisibility(False)
 
 
 # Setter for the [selected_search_algorithm]
@@ -129,6 +237,7 @@ def solve():
 ########################################
 ########		  Main		 	########
 ########################################
+
 # Constants
 circle_radius = 20
 circle_colors = {
@@ -138,14 +247,16 @@ circle_colors = {
 node_colors = {
     "empty": "white",
     "source": "red",
-    "target": "green",
+    "goal": "green",
     "visited": "purple",
     "path": "orange"
 }
+undirected = "undirected"
+directed = "directed"
 
-# Search Agent
-search_agent = SearchAgent((20, 10))
-node_counter = 100
+
+# Updates flags - Optimization measures
+graph_updated = True
 
 
 # Getting and setting canvas
@@ -157,8 +268,19 @@ canvas["width"] = window_width
 canvas["height"] = window_height - (90 + 220 + 40 + 20)
 
 
+# Search Agent
+search_agent = SearchAgent({
+    0: Node(0, (canvas.width / 2, canvas.height / 2), state="source", children={}),
+})
+graph_type = undirected
+node_counter = 0
+
+
 # Mapping tools to their respective colors
+unselected = " "
 selected_tool = "add_node"
+selected_node_name = unselected
+selected_edge_ends = unselected
 
 
 # Mapping actions to their respective search algorithms
@@ -179,7 +301,19 @@ document["add_node"].bind("click", lambda e: select_tool("add_node"))
 document["add_edge"].bind("click", lambda e: select_tool("add_edge"))
 document["delete_node"].bind("click", lambda e: select_tool("delete_node"))
 document["delete_edge"].bind("click", lambda e: select_tool("delete_edge"))
+document["toggle_goal"].bind("click", lambda e: select_tool("toggle_goal"))
+document["update_heuristic"].bind(
+    "click", lambda e: select_tool("update_heuristic"))
+document["update_weight"].bind(
+    "click", lambda e: select_tool("update_weight"))
 document["canvas"].bind("mousedown", mousemove)
+
+
+# Binding actions to weights modal
+document["weights-close"].bind("click",
+                               lambda e: setInputDialogVisibility(False))
+document["weights-update"].bind("click", lambda e: heuristicsDialogUpdate(
+) if selected_tool is "update_heuristic" else weightsDialogUpdate())
 
 
 # Binding listeners to algorithms options and solve

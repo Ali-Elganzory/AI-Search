@@ -68,14 +68,37 @@
 			<!---------------->
 
 
+			<!-- Weights Dialog -->
+			<dialog id="weights-modal">
+				<form id="weights-form">
+					<div class="row justify-content-center align-items-center">
+						<div class="col-auto">
+							Enter a weight:
+						</div>
+						<div class="col-auto">
+							<input id="weights-input" type="number" class="form-control" placeholder="1" min="1"
+								required>
+						</div>
+						<div class="col-auto">
+							<button id="weights-update" type="button" class="btn btn-primary">Update</button>
+						</div>
+						<div class="col-auto">
+							<button id="weights-close" type="button" class="btn btn-danger">Close</button>
+						</div>
+					</div>
+				</form>
+			</dialog>
+			<!---------------->
 
-			<div id="tools" class="col-5 py-4 btn-group position-relative top-50 start-50 translate-middle-x"
+
+
+			<div id="tools" class="col-8 py-4 btn-group position-relative top-50 start-50 translate-middle-x"
 				role="group" aria-label="tools">
 				<input type="radio" class="btn-check" name="btnradio" id="add_node" autocomplete="off" checked>
-				<label class="btn btn-outline-success" for="add_node"><i class="fa fa-square"></i> Add node</label>
+				<label class="btn btn-outline-primary" for="add_node"><i class="fa fa-square"></i> Add node</label>
 
 				<input type="radio" class="btn-check" name="btnradio" id="add_edge" autocomplete="off">
-				<label class="btn btn-outline-success" for="add_edge"><i class="fa fa-square"></i> Add edge</label>
+				<label class="btn btn-outline-primary" for="add_edge"><i class="fa fa-square"></i> Add edge</label>
 
 				<input type="radio" class="btn-check" name="btnradio" id="delete_node" autocomplete="off">
 				<label class="btn btn-outline-danger" for="delete_node"><i class="fa fa-minus-square"></i> Delete
@@ -84,7 +107,29 @@
 				<input type="radio" class="btn-check" name="btnradio" id="delete_edge" autocomplete="off">
 				<label class="btn btn-outline-danger" for="delete_edge"><i class="fa fa-minus-square"></i> Delete
 					edge</label>
+
+				<input type="radio" class="btn-check" name="btnradio" id="toggle_goal" autocomplete="off">
+				<label class="btn btn-outline-success" for="toggle_goal">Goal</label>
+
+				<input type="radio" class="btn-check" name="btnradio" id="update_heuristic" autocomplete="off">
+				<label class="btn btn-outline-secondary" for="update_heuristic">Set Heuristic</label>
+
+				<input type="radio" class="btn-check" name="btnradio" id="update_weight" autocomplete="off">
+				<label class="btn btn-outline-secondary" for="update_weight">Set Weight</label>
 			</div>
+
+			<!--
+
+				<div id="graph_type" class="col-1 py-4 btn-group position-relative top-50 start-50 translate-middle-x"
+				role="group" aria-label="graph_type">
+				<input type="radio" class="btn-check" name="btnradio" id="directed_graph" autocomplete="off" checked>
+				<label class="btn btn-outline-primary" for="directed_graph">Directed</label>
+				
+				<input type="radio" class="btn-check" name="btnradio" id="undirected_graph" autocomplete="off">
+				<label class="btn btn-outline-primary" for="undirected_graph">Undirected</label>
+			</div>
+			
+			-->
 
 		</div>
 	</div>
@@ -93,10 +138,10 @@
 
 	<div style="height: 220px;">
 
-		<p class="col-5 fs-5 position-relative start-50 translate-middle-x">
+		<p class="col-8 fs-5 position-relative start-50 translate-middle-x">
 			Uninformed Search
 		</p>
-		<div id="uninformed search" class="col-5 btn-group position-relative start-50 translate-middle-x" role="group"
+		<div id="uninformed search" class="col-8 btn-group position-relative start-50 translate-middle-x" role="group"
 			aria-label="uninformed search">
 			<input type="radio" class="btn-check" name="search" id="breadth-first" autocomplete="off" checked>
 			<label class="btn btn-outline-primary" for="breadth-first">Breadth First</label>
@@ -116,11 +161,11 @@
 
 		<div class="py-2"></div>
 
-		<p class="col-5 fs-5 position-relative start-50 translate-middle-x">
+		<p class="col-8 fs-5 position-relative start-50 translate-middle-x">
 			Informed Search
 		</p>
 
-		<div id="Informed search" class="col-5 btn-group position-relative start-50 translate-middle-x" role="group"
+		<div id="Informed search" class="col-8 btn-group position-relative start-50 translate-middle-x" role="group"
 			aria-label="informed search">
 			<input type="radio" class="btn-check" name="search" id="greedy" autocomplete="off">
 			<label class="btn btn-outline-primary" for="greedy">Greedy</label>
