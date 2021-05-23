@@ -118,25 +118,21 @@
 				<label class="btn btn-outline-secondary" for="update_weight">Set Weight</label>
 			</div>
 
-			<!--
-
-				<div id="graph_type" class="col-1 py-4 btn-group position-relative top-50 start-50 translate-middle-x"
-				role="group" aria-label="graph_type">
-				<input type="radio" class="btn-check" name="btnradio" id="directed_graph" autocomplete="off" checked>
-				<label class="btn btn-outline-primary" for="directed_graph">Directed</label>
-				
-				<input type="radio" class="btn-check" name="btnradio" id="undirected_graph" autocomplete="off">
-				<label class="btn btn-outline-primary" for="undirected_graph">Undirected</label>
-			</div>
-			
-			-->
-
 		</div>
 	</div>
 
 	<canvas id="canvas"></canvas>
 
-	<div style="height: 220px;">
+	<div style="height: 240px;">
+
+		<div id="graph_type" class="col-2 btn-group position-relative start-50 translate-middle-x" role="group"
+			aria-label="graph_type">
+			<input type="radio" class="btn-check" name="graph-type" id="undirected_graph" autocomplete="off" checked>
+			<label class="btn btn-outline-primary" for="undirected_graph">Undirected</label>
+
+			<input type="radio" class="btn-check" name="graph-type" id="directed_graph" autocomplete="off">
+			<label class="btn btn-outline-primary" for="directed_graph">Directed</label>
+		</div>
 
 		<p class="col-8 fs-5 position-relative start-50 translate-middle-x">
 			Uninformed Search
