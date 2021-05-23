@@ -14,5 +14,5 @@ class Node(object):
         self.prev_cost = prev_cost
 
     def copy_from(node, cost, path):
-        return Node(node.name, node.position, node.state, cost,
-                    node.heuristic, node.children, path)
+        return Node(node.name, node.position, node.state, cost, node.cost,
+                    node.heuristic, node.children, path, node.fringed)
