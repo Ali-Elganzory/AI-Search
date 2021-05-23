@@ -53,25 +53,15 @@ class SearchAgent(object):
 
     # Expand a node to its valid new states
     def expand(self, node):
-        return list(map(lambda name: Node.copy_from(self.graph[node.name], cost=node.cost + node.children[name], path=node.path + [node.name]), node.children.keys()))
-
-    # Retuen Heuristic
-    def h(self, node):
-        return self.graph[node.name].heuristic
-
-    # Calculate actual cost
-    def calc_c(self, node, from):
-        heuristic = self.graph[node.name].heuristic
-        if self.graph[node.name].fringed:
-            self.graph[node.name].cost = min(self.graph[node.name].cost + heuristic, self.graph[node.name].prev_cost)
-            return
-        else:
-            self.graph[node.name].cost = self.graph[node.name].cost + heuristic
-            return
+        return list(map(lambda name: Node.copy_from(self.graph[name], cost=node.cost + node.children[name], path=node.path + [node.name]), node.children.keys()))
 
     # Return actual cost
-    def c(self, node):
-        return self.graph[node.name].cost
+    def cost(self, node):
+        return node.cost
+
+    # Retuen Heuristic
+    def heuristic(self, node):
+        return node.heuristic
 
     # Get the source node (start state)
     @property
@@ -84,7 +74,7 @@ class SearchAgent(object):
         if result == "failed":
             self.graph[goal.name].state = "source"
             return
-        print(goal.path)
+        
         for node_name in goal.path[0:]:
             self.graph[node_name].state = "path"
         self.graph[goal.path[0]].state = "source"
@@ -205,7 +195,6 @@ class SearchAgent(object):
     def greedy_search(self):
         self.reset_grid()
         pass
-        
 
     def a_star_search(self):
         source = self.source
@@ -215,9 +204,9 @@ class SearchAgent(object):
         fringe = []
         node = source
         fringe.append(node)
-        
+
         while(fringe):
-            sorted(fringe, key = self.c)
+            sorted(fringe, key=self.c)
             node = fringe.pop()
             if self.is_goal_state(node):
                 self.finished("success", node)
@@ -232,4 +221,3 @@ class SearchAgent(object):
             yield
 
         self.finished("failed", source)
-
