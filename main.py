@@ -356,7 +356,7 @@ ctx = canvas.getContext("2d")
 window_width = window.innerWidth
 window_height = window.innerHeight
 canvas["width"] = window_width
-canvas["height"] = window_height - (90 + 240 + 40 + 20)
+canvas["height"] = window_height - (60 + 180 + 32 + 20)
 
 
 # Search Agent

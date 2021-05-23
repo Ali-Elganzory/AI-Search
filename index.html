@@ -31,12 +31,12 @@
 
 <body id="body" onload="brython()">
 
-	<div style="height: 90px;">
+	<div class="header-height">
 		<div class="row position-relative">
 
 			<div class="col-1 py-4 px-5 position-absolute">
 				<span data-bs-toggle="tooltip" data-bs-placement="bottom" title="Help">
-					<button type="button" class="shadow btn btn-primary btn-circle" data-bs-toggle="modal"
+					<button type="button" class="shadow btn btn-primary btn-sm btn-circle" data-bs-toggle="modal"
 						data-bs-target="#help-modal">
 						<i class="fa fa-question"></i>
 					</button>
@@ -92,7 +92,8 @@
 
 
 
-			<div id="tools" class="col-8 py-4 btn-group position-relative top-50 start-50 translate-middle-x"
+			<div id="tools"
+				class="col-8 py-4 btn-group btn-group-sm position-relative top-50 start-50 translate-middle-x"
 				role="group" aria-label="tools">
 				<input type="radio" class="btn-check" name="btnradio" id="add_node" autocomplete="off" checked>
 				<label class="btn btn-outline-primary" for="add_node"><i class="fa fa-square"></i> Add node</label>
@@ -123,10 +124,10 @@
 
 	<canvas id="canvas"></canvas>
 
-	<div style="height: 240px;">
+	<div class="bottom-options-height">
 
-		<div id="graph_type" class="col-2 btn-group position-relative start-50 translate-middle-x" role="group"
-			aria-label="graph_type">
+		<div id="graph_type" class="col-2 btn-group btn-group-sm position-relative start-50 translate-middle-x"
+			role="group" aria-label="graph_type">
 			<input type="radio" class="btn-check" name="graph-type" id="undirected_graph" autocomplete="off" checked>
 			<label class="btn btn-outline-primary" for="undirected_graph">Undirected</label>
 
@@ -134,11 +135,11 @@
 			<label class="btn btn-outline-primary" for="directed_graph">Directed</label>
 		</div>
 
-		<p class="col-8 fs-5 position-relative start-50 translate-middle-x">
+		<p class="col-8 my-1 fs-7 position-relative start-50 translate-middle-x">
 			Uninformed Search
 		</p>
-		<div id="uninformed search" class="col-8 btn-group position-relative start-50 translate-middle-x" role="group"
-			aria-label="uninformed search">
+		<div id="uninformed search" class="col-8 btn-group btn-group-sm position-relative start-50 translate-middle-x"
+			role="group" aria-label="uninformed search">
 			<input type="radio" class="btn-check" name="search" id="breadth-first" autocomplete="off" checked>
 			<label class="btn btn-outline-primary" for="breadth-first">Breadth First</label>
 
@@ -157,12 +158,12 @@
 
 		<div class="py-2"></div>
 
-		<p class="col-8 fs-5 position-relative start-50 translate-middle-x">
+		<p class="col-8 my-1 fs-7 position-relative start-50 translate-middle-x">
 			Informed Search
 		</p>
 
-		<div id="Informed search" class="col-8 btn-group position-relative start-50 translate-middle-x" role="group"
-			aria-label="informed search">
+		<div id="Informed search" class="col-8 btn-group btn-group-sm position-relative start-50 translate-middle-x"
+			role="group" aria-label="informed search">
 			<input type="radio" class="btn-check" name="search" id="greedy" autocomplete="off">
 			<label class="btn btn-outline-primary" for="greedy">Greedy</label>
 
@@ -171,9 +172,9 @@
 		</div>
 	</div>
 
-	<div class="container" style="height: 40px;">
+	<div class="container solve-btn-height">
 		<div class="row justify-content-center">
-			<button id="solve" type="button" class="col-5 btn btn-dark">Solve</button>
+			<button id="solve" type="button" class="col-5 btn btn-dark btn-sm">Solve</button>
 		</div>
 	</div>
 
