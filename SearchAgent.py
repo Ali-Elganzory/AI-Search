@@ -52,6 +52,24 @@ class SearchAgent(object):
     def expand(self, node):
         return list(map(lambda name: Node.copy_from(self.graph[name], extra_cost=node.children[name], path=node.path + [node.name]), node.children.keys()))
 
+    # Retuen Heuristic
+    def h(self, node):
+        return self.graph[node.name].heuristic
+
+    # Calculate actual cost
+    def calc_c(self, node, from):
+        heuristic = self.graph[node.name].heuristic
+        if self.graph[node.name].fringed:
+            self.graph[node.name].cost = min(self.graph[node.name].cost + heuristic, self.graph[node.name].prev_cost)
+            return
+        else:
+            self.graph[node.name].cost = self.graph[node.name].cost + heuristic
+            return
+
+    # Return actual cost
+    def c(self, node):
+        return self.graph[node.name].cost
+
     # Get the source node (start state)
     @property
     def source(self):
@@ -181,7 +199,31 @@ class SearchAgent(object):
     def greedy_search(self):
         self.reset_grid()
         pass
+        
 
     def a_star_search(self):
-        self.reset_grid()
-        pass
+        source = self.source
+        if not self.reserve_agent():
+            return
+        self.reset_graph()
+        fringe = []
+        node = source
+        fringe.append(node)
+        
+        while(fringe):
+            sorted(fringe, key = self.c)
+            node = fringe.pop()
+            if self.is_goal_state(node):
+                self.finished("success", node)
+                return
+            if self.node_state(node) != "visited":
+                self.grid[node.x][node.y] = "visited"
+                for i in self.expand(node):
+                    if self.node_state(i) != "visited":
+                        self.calc_c(self, i, node)
+                        self.graph[node.name].fringed = 1
+                        fringe.append(i)
+            yield
+
+        self.finished("failed", source)
+
