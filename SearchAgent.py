@@ -53,7 +53,7 @@ class SearchAgent(object):
 
     # Expand a node to its valid new states
     def expand(self, node):
-        return list(map(lambda name: Node.copy_from(self.graph[name], extra_cost=node.children[name], path=node.path + [node.name]), node.children.keys()))
+        return list(map(lambda name: Node.copy_from(self.graph[node.name], cost=node.cost + node.children[name], path=node.path + [node.name]), node.children.keys()))
 
     # Get the source node (start state)
     @property

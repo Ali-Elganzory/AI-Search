@@ -11,6 +11,6 @@ class Node(object):
         self.children = children
         self.path = path
 
-    def copy_from(node, extra_cost, path):
-        return Node(node.name, node.position, node.state, node.cost + extra_cost,
+    def copy_from(node, cost, path):
+        return Node(node.name, node.position, node.state, cost,
                     node.heuristic, node.children, path)
