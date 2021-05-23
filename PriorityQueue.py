@@ -1,91 +1,36 @@
-##  From https://github.com/fafl/priority-queue
-
 class PriorityQueue(object):
+    def __init__(self, greatest=False):
+        self.queue = []
+        self.greatest = greatest
 
-    def __init__(self):
+    def __str__(self):
+        return ' '.join([str(i[0]) for i in self.queue])
 
-        # List of items, flattened binary heap. The first element is not used.
-        # Each node is a tuple of (value, priority, insert_counter)
-        self.nodes = [None]  # first element is not used
+    # for checking if the queue is empty
+    def isEmpty(self):
+        return len(self.queue) == 0
 
-        # Current state of the insert counter
-        self.insert_counter = 0          # tie breaker, keeps the insertion order
+    def isNotEmpty(self):
+        return not self.isEmpty()
 
-    # Comparison function between two nodes
-    # Higher priority wins
-    # On equal priority: Lower insert counter wins
-    def _is_higher_than(self, a, b):
-        return b[1] < a[1] or (a[1] == b[1] and a[2] < b[2])
+    # for inserting an element in the queue
+    def add(self, data, priority):
+        self.queue.append((data, priority))
 
-    # Move a node up until the parent is bigger
-    def _heapify(self, new_node_index):
-        while 1 < new_node_index:
-            new_node = self.nodes[new_node_index]
-            parent_index = new_node_index / 2
-            parent_node = self.nodes[parent_index]
-
-            # Parent too big?
-            if self._is_higher_than(parent_node, new_node):
-                break
-
-            # Swap with parent
-            tmp_node = parent_node
-            self.nodes[parent_index] = new_node
-            self.nodes[new_node_index] = tmp_node
-
-            # Continue further up
-            new_node_index = parent_index
-
-    # Add a new node with a given priority
-    def add(self, value, priority):
-        new_node_index = len(self.nodes)
-        self.insert_counter += 1
-        self.nodes.append((value, priority, self.insert_counter))
-
-        # Move the new node up in the hierarchy
-        self._heapify(new_node_index)
-
-    # Return the top element
-    def peek(self):
-        if len(self.nodes) == 1:
-            return None
-        else:
-            return self.nodes[1][0]
-
-    # Remove the top element and return it
+    # for popping an element based on Priority
     def pop(self):
-
-        if len(self.nodes) == 1:
-            raise LookupError("Heap is empty")
-
-        result = self.nodes[1][0]
-
-        # Move empty space down
-        empty_space_index = 1
-        while empty_space_index * 2 < len(self.nodes):
-
-            left_child_index = empty_space_index * 2
-            right_child_index = empty_space_index * 2 + 1
-
-            # Left child wins
-            if (
-                len(self.nodes) <= right_child_index
-                or self._is_higher_than(self.nodes[left_child_index], self.nodes[right_child_index])
-            ):
-                self.nodes[empty_space_index] = self.nodes[left_child_index]
-                empty_space_index = left_child_index
-
-            # Right child wins
-            else:
-                self.nodes[empty_space_index] = self.nodes[right_child_index]
-                empty_space_index = right_child_index
-
-        # Swap empty space with the last element and heapify
-        last_node_index = len(self.nodes) - 1
-        self.nodes[empty_space_index] = self.nodes[last_node_index]
-        self._heapify(empty_space_index)
-
-        # Throw out the last element
-        self.nodes.pop()
-
-        return result
+        try:
+            index = 0
+            for i in range(len(self.queue)):
+                if self.greatest:
+                    if self.queue[i][1] > self.queue[index][1]:
+                        index = i
+                else:
+                    if self.queue[i][1] < self.queue[index][1]:
+                        index = i
+            item = self.queue[index]
+            del self.queue[index]
+            return item[0]
+        except IndexError:
+            print()
+            exit()

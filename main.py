@@ -306,14 +306,15 @@ def updateWeight(from_node, to_node, weight):
 def heuristicsDialogUpdate():
     validated = document["weights-form"].reportValidity()
     if validated:
-        updateHeuristic(selected_node_name, document["weights-input"].value)
+        updateHeuristic(selected_node_name, int(
+            document["weights-input"].value))
         setInputDialogVisibility(False)
 
 
 def weightsDialogUpdate():
     validated = document["weights-form"].reportValidity()
     if validated:
-        updateWeight(*selected_edge_ends, document["weights-input"].value)
+        updateWeight(*selected_edge_ends, int(document["weights-input"].value))
         setInputDialogVisibility(False)
 
 
