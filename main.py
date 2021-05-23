@@ -21,7 +21,7 @@ def window_updated():
 
 
 def update(event=None):
-    global start_date, circle_radius, circle_colors, graph_updated
+    global start_date, circle_radius, circle_colors, weight_text_shift, graph_updated
 
     # Drawing
     if is_graph_updated():
@@ -42,9 +42,40 @@ def update(event=None):
             for child_name, weight in node.children.items():
                 ctx.moveTo(*node.position)
                 ctx.lineTo(*search_agent.graph[child_name].position)
-                ctx.fillText(weight, (node.position[0] +
-                                      search_agent.graph[child_name].position[0]) / 2 + 4, (node.position[1] + search_agent.graph[child_name].position[1]) / 2 - 8)
+
+                dx = search_agent.graph[child_name].position[0] - \
+                    node.position[0]
+                dy = search_agent.graph[child_name].position[1] - \
+                    node.position[1]
+                if graph_type is directed:
+                    # Cartesian calculations
+                    distance = javascript.Math.sqrt(dx * dx + dy * dy)
+                    new_x = search_agent.graph[child_name].position[0] - \
+                        dx / distance * circle_radius
+                    new_y = search_agent.graph[child_name].position[1] - \
+                        dy / distance * circle_radius
+
+                    # Transform to ease drawing the arrow head
+                    ctx.translate(new_x, new_y)
+                    ctx.rotate(javascript.Math.atan2(dy, dx))
+
+                    # Draw arrow head
+                    size = 8
+                    ctx.moveTo(0, 0)
+                    ctx.lineTo(-size, -size/2)
+                    ctx.lineTo(-size, size/2)
+                    ctx.lineTo(0, 0)
+                    ctx.setTransform(1, 0, 0, 1, 0, 0)
+                    ctx.fillText(weight, new_x + directed_weight_text_shift_in_x(dx, dy),
+                                 new_y + directed_weight_text_shift_in_y(dx, dy))
+
+                else:
+                    ctx.fillText(weight, (node.position[0] +
+                                          search_agent.graph[child_name].position[0]) / 2 + weight_text_shift_in_x(dx, dy),
+                                 (node.position[1] + search_agent.graph[child_name].position[1]) / 2 + (-weight_text_shift))
+
             ctx.stroke()
+            ctx.fill()
 
         # Draw nodes
         ctx.font = '16px serif'
@@ -87,13 +118,28 @@ def update(event=None):
             pass
 
 
+def weight_text_shift_in_x(dx, dy):
+    global weight_text_shift
+    return (weight_text_shift if dx < 0 else -weight_text_shift) if dy < 0 else (weight_text_shift if dx > 0 else -weight_text_shift)
+
+
+def directed_weight_text_shift_in_x(dx, dy):
+    global weight_text_shift
+    return (2 * weight_text_shift if dx < 0 else 2 * -weight_text_shift)
+
+
+def directed_weight_text_shift_in_y(dx, dy):
+    global weight_text_shift
+    return -(dy * 0.1 + weight_text_shift)
+
+
 def mousemove(event):
     global selected_tool, search_agent, \
         node_counter, graph_updated, \
         selected_node_name, selected_edge_ends
 
     x = event.x
-    y = event.y - 90
+    y = event.y - 60
 
     def get_clicked_node_name(radius):
         for node in search_agent.graph.values():
@@ -105,12 +151,29 @@ def mousemove(event):
         return -1
 
     def get_clicked_edge_ends(radius):
+        global weight_text_shift
+
         for node in search_agent.graph.values():
             for child_name in node.children:
-                textX = (node.position[0] +
-                         search_agent.graph[child_name].position[0]) / 2 + 4
-                textY = (node.position[1] +
-                         search_agent.graph[child_name].position[1]) / 2 - 8
+                # Cartesian calculations
+                dx = search_agent.graph[child_name].position[0] - \
+                    node.position[0]
+                dy = search_agent.graph[child_name].position[1] - \
+                    node.position[1]
+
+                if graph_type is directed:
+                    distance = javascript.Math.sqrt(dx * dx + dy * dy)
+                    textX = search_agent.graph[child_name].position[0] - \
+                        dx / distance * circle_radius + \
+                        directed_weight_text_shift_in_x(dx, dy)
+                    textY = search_agent.graph[child_name].position[1] - \
+                        dy / distance * circle_radius + \
+                        directed_weight_text_shift_in_y(dx, dy)
+                else:
+                    textX = (node.position[0] +
+                             search_agent.graph[child_name].position[0]) / 2 + weight_text_shift_in_x(dx, dy)
+                    textY = (node.position[1] +
+                             search_agent.graph[child_name].position[1]) / 2 + (-weight_text_shift)
                 if x <= textX + radius and \
                         x >= textX - radius and \
                         y <= textY + radius and \
@@ -131,6 +194,9 @@ def mousemove(event):
             elif selected_tool is "add_edge":
                 selected_node_name = unselected
                 graph_updated = True
+            elif selected_tool is "delete_edge":
+                selected_node_name = unselected
+                graph_updated = True
             elif selected_tool is "update_weight":
                 edge_ends = get_clicked_edge_ends(12)
                 if edge_ends != -1:
@@ -141,11 +207,16 @@ def mousemove(event):
             if selected_tool is "toggle_goal":
                 if search_agent.graph[node_name].state is "source":
                     return
-                search_agent.graph[node_name].state = "goal" if search_agent.graph[node_name].state is not "goal" else "empty"
+                if search_agent.graph[node_name].state is "goal":
+                    search_agent.graph[node_name].state = "empty"
+                else:
+                    search_agent.graph[node_name].state = "goal"
+                    search_agent.graph[node_name].heuristic = 0
                 graph_updated = True
             elif selected_tool is "update_heuristic":
-                selected_node_name = node_name
-                setInputDialogVisibility(True)
+                if search_agent.graph[node_name].state is not "goal":
+                    selected_node_name = node_name
+                    setInputDialogVisibility(True)
                 graph_updated = True
             elif selected_tool is "delete_node":
                 if search_agent.graph[node_name].state is not "source":
@@ -165,6 +236,19 @@ def mousemove(event):
                             search_agent.graph[node_name].children[selected_node_name] = 99
                         selected_node_name = unselected
                         graph_updated = True
+            elif selected_tool is "delete_edge":
+                if selected_node_name is unselected:
+                    selected_node_name = node_name
+                    graph_updated = True
+                elif selected_node_name is not node_name:
+                    if child_exists(search_agent.graph[selected_node_name].children, node_name):
+                        search_agent.graph[selected_node_name].children.pop(
+                            node_name, 99)
+                        if graph_type is undirected:
+                            search_agent.graph[node_name].children.pop(
+                                selected_node_name, 99)
+                        selected_node_name = unselected
+                        graph_updated = True
 
 
 def child_exists(children, child_name):
@@ -180,6 +264,17 @@ def is_graph_updated():
 def select_tool(tool):
     global selected_tool
     selected_tool = tool
+
+
+# Setter for the [graph_type]
+def select_graph_type(type):
+    global graph_type, graph_updated
+
+    graph_type = type
+    search_agent.graph = {
+        0: Node(0, (canvas.width / 2, canvas.height / 2), state="source", children={}),
+    }
+    graph_updated = True
 
 
 # Weights dialog
@@ -240,6 +335,7 @@ def solve():
 
 # Constants
 circle_radius = 20
+weight_text_shift = 10
 circle_colors = {
     "unselected": "black",
     "selected": "red"
@@ -265,7 +361,7 @@ ctx = canvas.getContext("2d")
 window_width = window.innerWidth
 window_height = window.innerHeight
 canvas["width"] = window_width
-canvas["height"] = window_height - (90 + 220 + 40 + 20)
+canvas["height"] = window_height - (60 + 180 + 32 + 20)
 
 
 # Search Agent
@@ -307,6 +403,13 @@ document["update_heuristic"].bind(
 document["update_weight"].bind(
     "click", lambda e: select_tool("update_weight"))
 document["canvas"].bind("mousedown", mousemove)
+
+
+# Binding graph type buttons
+document["undirected_graph"].bind("click",
+                                  lambda e: select_graph_type(undirected))
+document["directed_graph"].bind("click",
+                                lambda e: select_graph_type(directed))
 
 
 # Binding actions to weights modal

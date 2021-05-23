@@ -8,9 +8,9 @@ canvas {
 
 
 .btn-circle {
-	width: 38px;
-	height: 38;
-	line-height: 38px;
+	width: 32px;
+	height: 32px;
+	line-height: 32px;
 	text-align: center;
 	padding: 0;
 	border-radius: 50%;
@@ -20,3 +20,14 @@ canvas {
 	height: 38px;
 }
 
+.header-height {
+	height: 60px;
+}
+
+.bottom-options-height {
+	height: 180px;
+}
+
+.solve-btn-height {
+	height: 32px;
+}

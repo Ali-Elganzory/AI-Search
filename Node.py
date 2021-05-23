@@ -13,6 +13,6 @@ class Node(object):
         self.fringed = fringed
         self.prev_cost = prev_cost
 
-    def copy_from(node, extra_cost, path):
-        return Node(node.name, node.position, node.state, node.cost + extra_cost, node.cost,
-                    node.heuristic, node.children, path, node.fringed)
+    def copy_from(node, cost, path):
+        return Node(node.name, node.position, node.state, cost,
+                    node.heuristic, node.children, path)
