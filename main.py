@@ -139,7 +139,7 @@ def mousemove(event):
         selected_node_name, selected_edge_ends
 
     x = event.x
-    y = event.y - 90
+    y = event.y - 60
 
     def get_clicked_node_name(radius):
         for node in search_agent.graph.values():
@@ -207,11 +207,16 @@ def mousemove(event):
             if selected_tool is "toggle_goal":
                 if search_agent.graph[node_name].state is "source":
                     return
-                search_agent.graph[node_name].state = "goal" if search_agent.graph[node_name].state is not "goal" else "empty"
+                if search_agent.graph[node_name].state is "goal":
+                    search_agent.graph[node_name].state = "empty"
+                else:
+                    search_agent.graph[node_name].state = "goal"
+                    search_agent.graph[node_name].heuristic = 0
                 graph_updated = True
             elif selected_tool is "update_heuristic":
-                selected_node_name = node_name
-                setInputDialogVisibility(True)
+                if search_agent.graph[node_name].state is not "goal":
+                    selected_node_name = node_name
+                    setInputDialogVisibility(True)
                 graph_updated = True
             elif selected_tool is "delete_node":
                 if search_agent.graph[node_name].state is not "source":
