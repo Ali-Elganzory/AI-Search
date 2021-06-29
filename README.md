@@ -1,7 +1,7 @@
 # AI-Project
 
 Check this app at:
-https://ali-elganzory.github.io/AI-Search/
+https://ali-elganzory.github.io/AI-Project/
 
 
 ## How to run the app
