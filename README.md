@@ -34,7 +34,7 @@ The app source code is attached with this document. Also, the app is source cont
 
 ## Method 1
 
-The app is deployed on GitHub Pages; Open this link [AI Search (ali-elganzory.github.io)](https://ali-elganzory.github.io/AI-Project/).
+The app is deployed on GitHub Pages; Open this link [AI Search (ali-elganzory.github.io)](https://ali-elganzory.github.io/AI-Search/).
 
 ## Method 2
 
