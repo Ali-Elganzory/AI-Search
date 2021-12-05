@@ -28,7 +28,7 @@ The app is built using HTML and Python as a website that can be run on any brows
 
 # Source Code
 
-The app source code is attached with this document. Also, the app is source controlled by git and is available at this [repository](https://github.com/Ali-Elganzory/AI-Project). You can browse the incremental phases we followed to develop the app.
+The app source code is attached with this document. Also, the app is source controlled by git and is available at this [repository](https://github.com/Ali-Elganzory/AI-Search). You can browse the incremental phases we followed to develop the app.
 
 # How to Run
 
